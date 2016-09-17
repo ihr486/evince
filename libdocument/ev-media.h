@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 typedef struct _EvMedia        EvMedia;
 typedef struct _EvMediaClass   EvMediaClass;
 typedef struct _EvMediaPrivate EvMediaPrivate;
+typedef struct _EvArtwork3D        EvArtwork3D;
+typedef struct _EvArtwork3DClass   EvArtwork3DClass;
+typedef struct _EvArtwork3DPrivate EvArtwork3DPrivate;
 
 #define EV_TYPE_MEDIA              (ev_media_get_type())
 #define EV_MEDIA(object)           (G_TYPE_CHECK_INSTANCE_CAST((object), EV_TYPE_MEDIA, EvMedia))
@@ -39,6 +42,13 @@ typedef struct _EvMediaPrivate EvMediaPrivate;
 #define EV_MEDIA_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST((klass), EV_TYPE_MEDIA, EvMediaClass))
 #define EV_IS_MEDIA_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE((klass), EV_TYPE_MEDIA))
 #define EV_MEDIA_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), EV_TYPE_MEDIA, EvMediaClass))
+
+#define EV_TYPE_ARTWORK3D              (ev_artwork3d_get_type())
+#define EV_ARTWORK3D(object)           (G_TYPE_CHECK_INSTANCE_CAST((object), EV_TYPE_ARTWORK3D, EvArtwork3D))
+#define EV_IS_ARTWORK3D(object)        (G_TYPE_CHECK_INSTANCE_TYPE((object), EV_TYPE_ARTWORK3D))
+#define EV_ARTWORK3D_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST((klass), EV_TYPE_ARTWORK3D, EvArtwork3DClass))
+#define EV_IS_ARTWORK3D_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE((klass), EV_TYPE_ARTWORK3D))
+#define EV_ARTWORK3D_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS((object), EV_TYPE_ARTWORK3D, EvArtwork3DClass))
 
 struct _EvMedia {
         GObject base_instance;
@@ -50,6 +60,16 @@ struct _EvMediaClass {
         GObjectClass base_class;
 };
 
+struct _EvArtwork3D {
+        EvMedia base_instance;
+
+        EvArtwork3DPrivate *priv;
+};
+
+struct _EvArtwork3DClass {
+        EvMediaClass base_class;
+};
+
 GType        ev_media_get_type          (void) G_GNUC_CONST;
 
 EvMedia     *ev_media_new_for_uri       (EvPage      *page,
@@ -59,6 +79,8 @@ guint        ev_media_get_page_index    (EvMedia     *media);
 gboolean     ev_media_get_show_controls (EvMedia     *media);
 void         ev_media_set_show_controls (EvMedia     *media,
                                          gboolean     show_controls);
+
+GType        ev_artwork3d_get_type      (void) G_GNUC_CONST;
 
 G_END_DECLS
 

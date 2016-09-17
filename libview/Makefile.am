@@ -61,6 +61,12 @@ libevview3_la_SOURCES += 	\
 	ev-media-player.c
 endif
 
+if ENABLE_3D
+libevview3_la_SOURCES += \
+	ev-model-viewer.h \
+	ev-model-viewer.c
+endif
+
 nodist_libevview3_la_SOURCES = \
 	ev-view-marshal.c \
 	ev-view-type-builtins.c \

@@ -2917,6 +2917,7 @@ ev_annot_from_poppler_annot (PopplerAnnot *poppler_annot,
 	        case POPPLER_ANNOT_LINK:
 	        case POPPLER_ANNOT_WIDGET:
 	        case POPPLER_ANNOT_MOVIE:
+            case POPPLER_ANNOT_3D:
 			/* Ignore link, widgets and movie annots since they are already handled */
 			break;
 	        case POPPLER_ANNOT_SCREEN: {
@@ -2928,7 +2929,6 @@ ev_annot_from_poppler_annot (PopplerAnnot *poppler_annot,
 				break;
 		}
 			/* Fall through */
-		case POPPLER_ANNOT_3D:
 		case POPPLER_ANNOT_CARET:
 		case POPPLER_ANNOT_FREE_TEXT:
 		case POPPLER_ANNOT_LINE:
@@ -2961,7 +2961,7 @@ ev_annot_from_poppler_annot (PopplerAnnot *poppler_annot,
 	if (unimplemented_annot) {
 		if (reported_annot) {
 			g_warning ("Unimplemented annotation: %s.  It is a known issue "
-			           "and it might be implemented in the future.",
+			           "and it might be implemented in the past.",
 				   unimplemented_annot);
 		} else {
 			g_warning ("Unimplemented annotation: %s, please post a "
@@ -3677,6 +3677,18 @@ ev_media_from_poppler_movie (EvDocument   *document,
 	return media;
 }
 
+static EvMedia *
+ev_media_from_poppler_artwork3d (EvDocument *document,
+                                 EvPage *page,
+                                 PopplerArtwork3D *artwork3d)
+{
+    EvArtwork3D *artwork3d;
+
+    artwork3d = ev_artwork3d_new_for_uri (page, uri);
+
+    return EV_MEDIA (artwork3d);
+}
+
 static void
 delete_temp_file (GFile *file)
 {
@@ -3789,6 +3801,11 @@ pdf_document_media_get_media_mapping (EvDocumentMedia *document_media,
 			}
 		}
 			break;
+        case POPPLER_ANNOT_3D: {
+            PopplerArtwork3D *artwork = poppler_annot_artwork3d_get_artwork3d (POPPLER_ANNOT_3D (mapping->annot));
+            media = ev_media_from_poppler_artwork3d (EV_DOCUMENT (pdf_document), page, artwork);
+        }
+            break;
 		default:
 			break;
 		}

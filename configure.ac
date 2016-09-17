@@ -366,6 +366,33 @@ fi
 
 AM_CONDITIONAL([ENABLE_MULTIMEDIA], [test "$enable_multimedia" = "yes"])
 
+# **********************
+# OpenGL (3D preview)
+# **********************
+
+AC_ARG_ENABLE([modelviewer],
+        [AS_HELP_STRING([--disable-modelviewer], [Disable 3D preview support])],
+        [enable_modelviewer=$enableval],
+        [enable_modelviewer=auto])
+
+if test "$enable_modelviewer" != "no"; then
+   if test "$enable_modelviewer" = "auto"; then
+      PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0], has_gstreamer=yes, has_gstreamer=no)
+   else
+      PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0])
+      has_gstreamer=yes
+   fi
+
+   if test x$has_gstreamer = xyes; then
+      AC_DEFINE([ENABLE_3D], [1], [Whether 3D preview support is enabled])
+      enable_modelviewer=yes
+   else
+      enable_modelviewer=no
+   fi
+fi
+
+AM_CONDITIONAL([ENABLE_3D], [test "$enable_modelviewer" = "yes"])
+
 dnl ========= Check for Desktop Schemas
 PKG_CHECK_MODULES([DESKTOP_SCHEMAS], [gsettings-desktop-schemas],
                   has_desktop_schemas=yes, has_desktop_schemas=no)

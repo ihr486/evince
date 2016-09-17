@@ -55,6 +55,26 @@ ev_media_init (EvMedia *media)
         media->priv = G_TYPE_INSTANCE_GET_PRIVATE (media, EV_TYPE_MEDIA, EvMediaPrivate);
 }
 
+G_DEFINE_TYPE (EvArtwork3D, ev_artwork3d, EV_TYPE_MEDIA)
+
+static void
+ev_artwork3d_finalize (GObject *object)
+{
+        EvArtwork3D *artwork3d = EV_ARTWORK3D (object);
+
+        G_OBJECT_CLASS (ev_artwork3d_parent_class)->finalize (object);
+}
+
+static void
+ev_artwork3d_class_init (EvArtwork3DClass *klass)
+{
+        GObjectClass *g_object_class = G_OBJECT_CLASS (klass);
+
+        g_object_class->finalize = ev_artwork3d_finalize;
+
+        g_type_class
+}
+
 EvMedia *
 ev_media_new_for_uri (EvPage      *page,
                       const gchar *uri)

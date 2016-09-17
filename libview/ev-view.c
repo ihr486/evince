@@ -49,6 +49,9 @@
 #ifdef ENABLE_MULTIMEDIA
 #include "ev-media-player.h"
 #endif
+#ifdef ENABLE_3D
+#include "ev-model-viewer.h"
+#endif
 
 enum {
 	SIGNAL_SCROLL,
@@ -2832,17 +2835,23 @@ static gboolean
 ev_view_find_player_for_media (EvView  *view,
 			       EvMedia *media)
 {
-#ifdef ENABLE_MULTIMEDIA
+#if defined (ENABLE_MULTIMEDIA) || defined (ENABLE_3D)
 	GList *l;
 
 	for (l = view->children; l; l = g_list_next (l)) {
 		EvViewChild *child = (EvViewChild *)l->data;
 
-		if (!EV_IS_MEDIA_PLAYER (child->widget))
-			continue;
-
-		if (ev_media_player_get_media (EV_MEDIA_PLAYER (child->widget)) == media)
-			return TRUE;
+#if defined (ENABLE_MULTIMEDIA)
+		if (EV_IS_MEDIA_PLAYER (child->widget)) {
+            if (ev_media_player_get_media (EV_MEDIA_PLAYER (child->widget)) == media)
+                return TRUE;
+        }
+#elif defined (ENABLE_3D)
+        if (EV_IS_MODEL_VIEWER (child->widget)) {
+            if (ev_model_viewer_get_media (EV_MODEL_VIEWER (child->widget)) == media)
+                return TRUE;
+        }
+#endif
 	}
 #endif
 
@@ -2853,7 +2862,7 @@ static void
 ev_view_handle_media (EvView  *view,
 		      EvMedia *media)
 {
-#ifdef ENABLE_MULTIMEDIA
+#if defined (ENABLE_MULTIMEDIA) || defined (ENABLE_3D)
 	GtkWidget     *player;
 	EvMappingList *media_mapping;
 	EvMapping     *mapping;
@@ -2868,7 +2877,11 @@ ev_view_handle_media (EvView  *view,
 	if (ev_view_find_player_for_media (view, media))
 		return;
 
+#if defined (ENABLE_MULTIMEDIA)
 	player = ev_media_player_new (media);
+#elif defined (ENABLE_3D)
+    player = ev_model_viewer_new (media);
+#endif
 
 	mapping = ev_mapping_list_find (media_mapping, media);
 	_ev_view_transform_doc_rect_to_view_rect (view, page, &mapping->area, &render_area);
@@ -2877,7 +2890,7 @@ ev_view_handle_media (EvView  *view,
 
 	ev_view_put (view, player, render_area.x, render_area.y, page, &mapping->area);
 	gtk_widget_show (player);
-#endif /* ENABLE_MULTIMEDIA */
+#endif /* ENABLE_MULTIMEDIA || ENABLE_3D */
 }
 
 /* Annotations */
