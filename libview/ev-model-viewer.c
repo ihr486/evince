@@ -28,9 +28,12 @@
 #include <gdk/gdkwin32.h>
 #endif
 
+#include <GL/glew.h>
+
 struct _EvModelViewer {
     GtkBox parent;
     EvMedia *media;
+    GtkWidget *viewport;
 };
 
 struct _EvModelViewerClass {
@@ -40,8 +43,35 @@ struct _EvModelViewerClass {
 G_DEFINE_TYPE (EvModelViewer, ev_model_viewer, GTK_TYPE_BOX)
 
 static void
+viewport_realize_cb (GtkGLArea *area, EvModelViewer *viewer)
+{
+    gtk_gl_area_make_current(area);
+
+    if (glewInit() != GLEW_OK) {
+        printf("GLEW initialization failed.\n");
+    } else {
+        printf("GLEW initialization succeeded.\n");
+    }
+}
+
+static gboolean
+viewport_render_cb (GtkGLArea *area, GdkGLContext *context)
+{
+    glClearColor (0, 0, 0, 0);
+
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    return TRUE;
+}
+
+static void
 ev_model_viewer_init (EvModelViewer *viewer)
 {
+    viewer->viewport = gtk_gl_area_new();
+    g_signal_connect (viewer->viewport, "realize", G_CALLBACK (viewport_realize_cb), viewer);
+    g_signal_connect (viewer->viewport, "render", G_CALLBACK (viewport_render_cb), NULL);
+    gtk_box_pack_start (GTK_BOX (viewer), viewer->viewport, TRUE, TRUE, 0);
+    gtk_widget_show (viewer->viewport);
 }
 
 static void

@@ -3681,9 +3681,7 @@ static void
 delete_temp_file (GFile *file)
 {
 	g_file_delete (file, NULL, NULL);
-    printf("Deleting tempfile...\n");
 	g_object_unref (file);
-    printf("Tempfile deleted.\n");
 }
 
 static gboolean
@@ -3829,8 +3827,6 @@ pdf_document_media_get_media_mapping (EvDocumentMedia *document_media,
         case POPPLER_ANNOT_3D: {
             PopplerArtwork3D *artwork = poppler_annot_artwork3d_get_artwork3d (POPPLER_ANNOT_3D (mapping->annot));
             media = ev_media_from_poppler_artwork3d (EV_DOCUMENT (pdf_document), page, artwork);
-            if (media)
-                printf("Creating Annot3D mapping at: %f %f %f %f\n", mapping->area.x1, mapping->area.x2, mapping->area.y2, mapping->area.y1);
         }
             break;
 		default:

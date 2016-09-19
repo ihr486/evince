@@ -2864,7 +2864,6 @@ static void
 ev_view_handle_media (EvView  *view,
 		      EvMedia *media)
 {
-    printf("ev_view_handle_media\n");
 #if defined (ENABLE_MULTIMEDIA) || defined (ENABLE_3D)
 	GtkWidget     *player;
 	EvMappingList *media_mapping;
@@ -2882,7 +2881,6 @@ ev_view_handle_media (EvView  *view,
 
 #if defined (ENABLE_3D) && defined (ENABLE_MULTIMEDIA)
     if (EV_IS_ARTWORK3D (media)) {
-        printf("Instantiating ModelViewer...\n");
         player = ev_model_viewer_new (media);
     } else {
         player = ev_media_player_new (media);
@@ -2890,7 +2888,6 @@ ev_view_handle_media (EvView  *view,
 #elif defined (ENABLE_MULTIMEDIA)
     player = ev_media_player_new (media);
 #elif defined (ENABLE_3D)
-    printf("Instantiating ModelViewer...\n");
     player = ev_model_viewer_new (media);
 #endif
 
