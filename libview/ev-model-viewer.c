@@ -80,6 +80,9 @@ ev_model_viewer_new (EvMedia *media)
     EvModelViewer *viewer = EV_MODEL_VIEWER (g_object_new (EV_TYPE_MODEL_VIEWER, NULL));
 
     viewer->media = media;
+    g_object_ref (media);
+
+    printf("Model path: %s\n", ev_media_get_uri (media));
 
     return GTK_WIDGET (viewer);
 }

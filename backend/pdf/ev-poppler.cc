@@ -3681,7 +3681,9 @@ static void
 delete_temp_file (GFile *file)
 {
 	g_file_delete (file, NULL, NULL);
+    printf("Deleting tempfile...\n");
 	g_object_unref (file);
+    printf("Tempfile deleted.\n");
 }
 
 static gboolean
