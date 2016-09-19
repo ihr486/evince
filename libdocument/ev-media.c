@@ -71,8 +71,27 @@ ev_artwork3d_class_init (EvArtwork3DClass *klass)
         GObjectClass *g_object_class = G_OBJECT_CLASS (klass);
 
         g_object_class->finalize = ev_artwork3d_finalize;
+}
 
-        g_type_class
+static void
+ev_artwork3d_init (EvArtwork3D *artwork)
+{
+}
+
+EvArtwork3D *
+ev_artwork3d_new_for_uri (EvPage *page,
+                          const gchar *uri)
+{
+        EvArtwork3D *artwork;
+
+        g_return_val_if_fail (EV_IS_PAGE (page), NULL);
+        g_return_val_if_fail (uri != NULL, NULL);
+
+        artwork = EV_ARTWORK3D (g_object_new (EV_TYPE_ARTWORK3D, NULL));
+        artwork->base_instance.priv->page = page->index;
+        artwork->base_instance.priv->uri = g_strdup (uri);
+
+        return artwork;
 }
 
 EvMedia *

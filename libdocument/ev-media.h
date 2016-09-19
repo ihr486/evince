@@ -82,6 +82,9 @@ void         ev_media_set_show_controls (EvMedia     *media,
 
 GType        ev_artwork3d_get_type      (void) G_GNUC_CONST;
 
+EvArtwork3D *ev_artwork3d_new_for_uri   (EvPage *page,
+                                         const gchar *uri);
+
 G_END_DECLS
 
 #endif /* __EV_MEDIA_H__ */

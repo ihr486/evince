@@ -376,14 +376,17 @@ AC_ARG_ENABLE([modelviewer],
         [enable_modelviewer=auto])
 
 if test "$enable_modelviewer" != "no"; then
-   if test "$enable_modelviewer" = "auto"; then
-      PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0], has_gstreamer=yes, has_gstreamer=no)
-   else
-      PKG_CHECK_MODULES([GSTREAMER], [gstreamer-1.0 gstreamer-base-1.0 gstreamer-video-1.0])
-      has_gstreamer=yes
+   AX_CHECK_GL(has_opengl=yes, has_opengl=no)
+   if test "$enable_modelviewer" = "yes"; then
+      has_opengl=yes
    fi
 
-   if test x$has_gstreamer = xyes; then
+   PKG_CHECK_MODULES([GLEW], [glew], has_glew=yes, has_glew=no)
+   if test "$enable_modelviewer" = "yes"; then
+      has_glew=yes
+   fi
+
+   if test x$has_opengl = xyes -a x$has_glew = xyes; then
       AC_DEFINE([ENABLE_3D], [1], [Whether 3D preview support is enabled])
       enable_modelviewer=yes
    else
@@ -417,8 +420,8 @@ LIBDOCUMENT_LIBS="$LIBDOCUMENT_LIBS"
 AC_SUBST(LIBDOCUMENT_CFLAGS)
 AC_SUBST(LIBDOCUMENT_LIBS)
 
-LIBVIEW_CFLAGS="$LIBVIEW_CFLAGS $GTKUNIXPRINT_CFLAGS $GSTREAMER_CFLAGS $DEBUG_FLAGS"
-LIBVIEW_LIBS="$LIBVIEW_LIBS $GTKUNIXPRINT_LIBS $GSTREAMER_LIBS -lm"
+LIBVIEW_CFLAGS="$LIBVIEW_CFLAGS $GTKUNIXPRINT_CFLAGS $GSTREAMER_CFLAGS $GL_CFLAGS $GLEW_CFLAGS $DEBUG_FLAGS"
+LIBVIEW_LIBS="$LIBVIEW_LIBS $GTKUNIXPRINT_LIBS $GSTREAMER_LIBS $GL_LIBS $GLEW_LIBS -lm"
 AC_SUBST(LIBVIEW_CFLAGS)
 AC_SUBST(LIBVIEW_LIBS)
 
@@ -1018,5 +1021,6 @@ Keyring integration ......:  $with_keyring
 GTK+ Unix Print ..........:  $with_gtk_unix_print
 Thumbnail cache ..........:  $enable_gnome_desktop
 Multimedia ...............:  $enable_multimedia
+Modelviewer ..............:  $enable_modelviewer
 
 ])

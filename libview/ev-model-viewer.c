@@ -33,7 +33,7 @@ struct _EvModelViewer {
     EvMedia *media;
 };
 
-struct _EvMediaPlayerClass {
+struct _EvModelViewerClass {
     GtkBoxClass parent_class;
 };
 
@@ -73,13 +73,13 @@ ev_model_viewer_class_init (EvModelViewerClass *klass)
 }
 
 GtkWidget *
-ev_model_viewer_new (EvArtwork3D *artwork)
+ev_model_viewer_new (EvMedia *media)
 {
-    g_return_val_if_fail (EV_IS_ARTWORK3D (artwork), NULL);
+    g_return_val_if_fail (EV_IS_ARTWORK3D (media), NULL);
 
-    EvModelViewer *viewer = EV_MODEL_VIEWER (g_object_new (EV_TYPE_MODEL_VIEWER));
+    EvModelViewer *viewer = EV_MODEL_VIEWER (g_object_new (EV_TYPE_MODEL_VIEWER, NULL));
 
-    viewer->media = EV_MEDIA (artwork);
+    viewer->media = media;
 
     return GTK_WIDGET (viewer);
 }

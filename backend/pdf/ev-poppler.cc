@@ -3677,18 +3677,6 @@ ev_media_from_poppler_movie (EvDocument   *document,
 	return media;
 }
 
-static EvMedia *
-ev_media_from_poppler_artwork3d (EvDocument *document,
-                                 EvPage *page,
-                                 PopplerArtwork3D *artwork3d)
-{
-    EvArtwork3D *artwork3d;
-
-    artwork3d = ev_artwork3d_new_for_uri (page, uri);
-
-    return EV_MEDIA (artwork3d);
-}
-
 static void
 delete_temp_file (GFile *file)
 {
@@ -3705,6 +3693,41 @@ media_save_to_file_callback (const gchar *buffer,
 	gint fd = GPOINTER_TO_INT (data);
 
 	return write (fd, buffer, count) == (gssize)count;
+}
+
+static EvMedia *
+ev_media_from_poppler_artwork3d (EvDocument *document,
+                                 EvPage *page,
+                                 PopplerArtwork3D *poppler_artwork3d)
+{
+    EvArtwork3D *artwork;
+    gint fd;
+    gchar *filename, *uri;
+    GFile *file = NULL;
+
+    fd = ev_mkstemp ("evmedia.XXXXXX", &filename, NULL);
+    if (fd == -1)
+        return NULL;
+
+    if (poppler_artwork3d_save_to_callback (poppler_artwork3d,
+                                            media_save_to_file_callback,
+                                            GINT_TO_POINTER (fd), NULL)) {
+        file = g_file_new_for_path (filename);
+    }
+
+    if (!file) return NULL;
+
+    uri = g_file_get_uri (file);
+
+    close(fd);
+    g_free(filename);
+
+    artwork = ev_artwork3d_new_for_uri (page, uri);
+    g_free (uri);
+
+    g_object_set_data_full (G_OBJECT (artwork), "poppler-media-temp-file", file, (GDestroyNotify)delete_temp_file);
+
+    return EV_MEDIA (artwork);
 }
 
 static EvMedia *
@@ -3804,6 +3827,8 @@ pdf_document_media_get_media_mapping (EvDocumentMedia *document_media,
         case POPPLER_ANNOT_3D: {
             PopplerArtwork3D *artwork = poppler_annot_artwork3d_get_artwork3d (POPPLER_ANNOT_3D (mapping->annot));
             media = ev_media_from_poppler_artwork3d (EV_DOCUMENT (pdf_document), page, artwork);
+            if (media)
+                printf("Creating Annot3D mapping at: %f %f %f %f\n", mapping->area.x1, mapping->area.x2, mapping->area.y2, mapping->area.y1);
         }
             break;
 		default:

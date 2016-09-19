@@ -2800,7 +2800,7 @@ get_media_mapping_at_location (EvView *view,
 			       gdouble y,
 			       gint *page)
 {
-#ifdef ENABLE_MULTIMEDIA
+#if defined(ENABLE_MULTIMEDIA) || defined(ENABLE_3D)
 	gint x_new = 0, y_new = 0;
 	EvMappingList *media_mapping;
 
@@ -2823,6 +2823,7 @@ ev_view_get_media_at_location (EvView  *view,
 			       gdouble  x,
 			       gdouble  y)
 {
+
 	EvMapping *media_mapping;
 	gint       page;
 
@@ -2846,7 +2847,8 @@ ev_view_find_player_for_media (EvView  *view,
             if (ev_media_player_get_media (EV_MEDIA_PLAYER (child->widget)) == media)
                 return TRUE;
         }
-#elif defined (ENABLE_3D)
+#endif
+#if defined (ENABLE_3D)
         if (EV_IS_MODEL_VIEWER (child->widget)) {
             if (ev_model_viewer_get_media (EV_MODEL_VIEWER (child->widget)) == media)
                 return TRUE;
@@ -2862,6 +2864,7 @@ static void
 ev_view_handle_media (EvView  *view,
 		      EvMedia *media)
 {
+    printf("ev_view_handle_media\n");
 #if defined (ENABLE_MULTIMEDIA) || defined (ENABLE_3D)
 	GtkWidget     *player;
 	EvMappingList *media_mapping;
@@ -2877,9 +2880,17 @@ ev_view_handle_media (EvView  *view,
 	if (ev_view_find_player_for_media (view, media))
 		return;
 
-#if defined (ENABLE_MULTIMEDIA)
-	player = ev_media_player_new (media);
+#if defined (ENABLE_3D) && defined (ENABLE_MULTIMEDIA)
+    if (EV_IS_ARTWORK3D (media)) {
+        printf("Instantiating ModelViewer...\n");
+        player = ev_model_viewer_new (media);
+    } else {
+        player = ev_media_player_new (media);
+    }
+#elif defined (ENABLE_MULTIMEDIA)
+    player = ev_media_player_new (media);
 #elif defined (ENABLE_3D)
+    printf("Instantiating ModelViewer...\n");
     player = ev_model_viewer_new (media);
 #endif
 
